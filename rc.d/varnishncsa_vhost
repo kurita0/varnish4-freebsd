@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# PROVIDE: varnishncsa
+# REQUIRE: DAEMON varnishd
+# KEYWORD: shutdown
+
+#
+# Add the following line to /etc/rc.conf to enable varnishncsa:
+#
+# varnishncsa_vhost_enable="YES"
+#
+# Configuration variables and their default values:
+#
+# varnishncsa_vhost_hostname - hostname.
+#	default: "example.com"
+#
+# varnishncsa_vhost_pidfile - full path to the PID file.
+#	default: "/var/run/varnishncsa-${varnishncsa_vhost_hostname}.pid"
+#
+# varnishncsa_vhost_file - full path to the log file.
+#	default: "/var/log/varnishncsa-${varnishncsa_vhost_hostname}.log"
+#
+# varnishncsa_vhost_flags - command line arguments.
+#	default: "-t off -P ${varnishncsa_vhost_pidfile} -D -a -w ${varnishncsa_vhost_file} ${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} ${varnishncsa_vhost_query:+-q \"$varnishncsa_vhost_query\"}"
+#
+# varnishncsa_vhost_logformat - log file format.
+#       default: "" (uses varnishncsa's default format)
+#       example: "%h %l %u %t \"%r\" %s %b \"%{Referer}i\" \"%{User-agent}i\""
+#
+# varnishncsa_vhost_query - VSL Query.
+#	default: "ReqHeader:Host ~ '^${varnishncsa_vhost_hostname}\$'"
+#
+# See varnishncsa(1) for a detailed overview of command-line options.
+#
+
+. /etc/rc.subr
+
+name=varnishncsa_vhost
+rcvar=${name}_enable
+
+load_rc_config ${name}
+
+: ${varnishncsa_vhost_enable:=NO}
+: ${varnishncsa_vhost_hostname=example.com}
+: ${varnishncsa_vhost_pidfile=/var/run/varnishncsa-${varnishncsa_vhost_hostname}.pid}
+: ${varnishncsa_vhost_file=/var/log/varnishncsa-${varnishncsa_vhost_hostname}.log}
+: ${varnishncsa_vhost_query="ReqHeader:Host ~ '^${varnishncsa_vhost_hostname}\$'"}
+: ${varnishncsa_vhost_flags="-t off -P ${varnishncsa_vhost_pidfile} -D -a -w ${varnishncsa_vhost_file} \
+${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} \
+${varnishncsa_vhost_query:+-q \"$varnishncsa_vhost_query\"}"}
+
+procname="/usr/local/bin/varnishncsa"
+command="/usr/sbin/daemon"
+command_args="-f -u varnishlog ${procname} ${varnishncsa_vhost_flags}"
+pidfile=${varnishncsa_vhost_pidfile}
+logfile=${varnishncsa_vhost_file}
+start_precmd=precmd
+
+precmd()
+{
+        # $varnishncsa_flags gets applied too early if we don't do this.
+        rc_flags=""
+
+	if [ ! -e ${pidfile} ]; then
+		install -o varnishlog -g varnish -m 644 /dev/null ${pidfile};
+	fi
+
+	if [ ! -e ${logfile} ]; then
+		install -o varnishlog -g varnish -m 640 /dev/null ${logfile};
+	fi
+}
+
+run_rc_command "$1"
