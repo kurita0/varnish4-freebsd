@@ -16,23 +16,27 @@
 # Configuration variables and their default values:
 #
 # varnishncsa_<id>_hostname - hostname.
-#	default: "example.com"
+#       default: "example.com"
 #
 # varnishncsa_<id>_pidfile - full path to the PID file.
-#	default: "/var/run/varnishncsa-${varnishncsa_<id>_hostname}.pid"
+#       default: "/var/run/varnishncsa-${varnishncsa_<id>_hostname}.pid"
 #
 # varnishncsa_<id>_file - full path to the log file.
-#	default: "/var/log/varnishncsa-${varnishncsa_<id>_hostname}.log"
-#
-# varnishncsa_<id>_flags - command line arguments.
-#	default: "-t off -P ${varnishncsa_<id>_pidfile} -D -a -w ${varnishncsa_<id>_file} ${varnishncsa_<id>_logformat:+-F \"$varnishncsa_<id>_logformat\"} ${varnishncsa_<id>_query:+-q \"$varnishncsa_<id>_query\"}"
+#       default: "/var/log/varnishncsa-${varnishncsa_<id>_hostname}.log"
 #
 # varnishncsa_<id>_logformat - log file format.
 #       default: "" (uses varnishncsa's default format)
 #       example: "%h %l %u %t \"%r\" %s %b \"%{Referer}i\" \"%{User-agent}i\""
 #
 # varnishncsa_<id>_query - VSL Query.
-#	default: "ReqHeader:Host ~ '^${varnishncsa_<id>_hostname}\$'"
+#       default: "ReqHeader:Host ~ \\\"^${varnishncsa_<id>_hostname}\$\\\""
+#
+# varnishncsa_<id>_flags - command line arguments.
+#       default: "-t off -P ${varnishncsa_<id>_pidfile} -D -a -w ${varnishncsa_<id>_file} \
+#                 ${varnishncsa_<id>_logformat:+-F \"$varnishncsa_<id>_logformat\"} \
+#                 -q \"${varnishncsa_<id>_query}\""
+#
+# varnishncsa_<id>_logformat - log file format.
 #
 # See varnishncsa(1) for a detailed overview of command-line options.
 #
@@ -52,10 +56,10 @@ eval pidfile='$'{${name}_pidfile}
 eval : '$'{${name}_file=/var/log/varnishncsa-'$'{vhost}.log}
 eval logfile='$'{${name}_file}
 eval logformat='$'{${name}_logformat}
-default_query="ReqHeader:Host ~ '^${vhost}\$'"
+default_query="ReqHeader:Host ~ \\\"^${vhost}\$\\\""
 eval : '$'{${name}_query='$'{default_query}}
 eval query='$'{${name}_query}
-default_flags="-t off -P ${pidfile} -D -a -w ${logfile} ${logformat:+-F \"${logformat}\"} ${query:+-q \"${query}\"}"
+default_flags="-t off -P ${pidfile} -D -a -w ${logfile} ${logformat:+-F \"${logformat}\"} -q \"${query}\""
 eval : '$'{${name}_flags='$'{default_flags}}
 eval flags='$'{${name}_flags}
 

@@ -12,23 +12,25 @@
 # Configuration variables and their default values:
 #
 # varnishncsa_vhost_hostname - hostname.
-#	default: "example.com"
+#       default: "example.com"
 #
 # varnishncsa_vhost_pidfile - full path to the PID file.
-#	default: "/var/run/varnishncsa-${varnishncsa_vhost_hostname}.pid"
+#       default: "/var/run/varnishncsa-${varnishncsa_vhost_hostname}.pid"
 #
 # varnishncsa_vhost_file - full path to the log file.
-#	default: "/var/log/varnishncsa-${varnishncsa_vhost_hostname}.log"
-#
-# varnishncsa_vhost_flags - command line arguments.
-#	default: "-t off -P ${varnishncsa_vhost_pidfile} -D -a -w ${varnishncsa_vhost_file} ${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} ${varnishncsa_vhost_query:+-q \"$varnishncsa_vhost_query\"}"
+#       default: "/var/log/varnishncsa-${varnishncsa_vhost_hostname}.log"
 #
 # varnishncsa_vhost_logformat - log file format.
 #       default: "" (uses varnishncsa's default format)
 #       example: "%h %l %u %t \"%r\" %s %b \"%{Referer}i\" \"%{User-agent}i\""
 #
 # varnishncsa_vhost_query - VSL Query.
-#	default: "ReqHeader:Host ~ '^${varnishncsa_vhost_hostname}\$'"
+#       default: "ReqHeader:Host ~ \\\"^${varnishncsa_vhost_hostname}\$\\\""
+#
+# varnishncsa_vhost_flags - command line arguments.
+#       default: "-t off -P ${varnishncsa_vhost_pidfile} -D -a -w ${varnishncsa_vhost_file} \
+#                 ${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} \
+#                 -q \"${varnishncsa_vhost_query}\""
 #
 # See varnishncsa(1) for a detailed overview of command-line options.
 #
@@ -44,10 +46,9 @@ load_rc_config ${name}
 : ${varnishncsa_vhost_hostname=example.com}
 : ${varnishncsa_vhost_pidfile=/var/run/varnishncsa-${varnishncsa_vhost_hostname}.pid}
 : ${varnishncsa_vhost_file=/var/log/varnishncsa-${varnishncsa_vhost_hostname}.log}
-: ${varnishncsa_vhost_query="ReqHeader:Host ~ '^${varnishncsa_vhost_hostname}\$'"}
+: ${varnishncsa_vhost_query="ReqHeader:Host ~ \\\"^${varnishncsa_vhost_hostname}\$\\\""}
 : ${varnishncsa_vhost_flags="-t off -P ${varnishncsa_vhost_pidfile} -D -a -w ${varnishncsa_vhost_file} \
-${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} \
-${varnishncsa_vhost_query:+-q \"$varnishncsa_vhost_query\"}"}
+${varnishncsa_vhost_logformat:+-F \"$varnishncsa_vhost_logformat\"} -q \"${varnishncsa_vhost_query}\""}
 
 procname="/usr/local/bin/varnishncsa"
 command="/usr/sbin/daemon"
