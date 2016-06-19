@@ -65,8 +65,6 @@ command="/usr/sbin/daemon"
 command_args="-f -u varnishlog sh -c '${procname} ${flags} | logger ${loggeropts}'"
 start_precmd=precmd
 
-echo $command_args
-
 precmd()
 {
         # $varnishncsa_flags gets applied too early if we don't do this.
