@@ -18,9 +18,13 @@
 #       default: "" (uses varnishncsa's default format)
 #       example: "%h %l %u %t %r %s %b %{Referer}i %{User-agent}i"
 #
+# varnishncsa_syslog_query - VSL Query.
+#       default: ""
+#
 # varnishncsa_syslog_flags - command line arguments.
 #       default: "-t off -P ${varnishncsa_syslog_pidfile}\
-#                 ${varnishncsa_syslog_logformat:+ -F \"$varnishncsa_syslog_logformat\"}"
+#                 ${varnishncsa_syslog_logformat:+ -F \"$varnishncsa_syslog_logformat\"}
+#                 ${varnishncsa_syslog_query:+ -q \"$varnishncsa_syslog_query\"}"
 #
 # varnishncsa_syslog_loggeropts - logger options.
 #	default: "-p local6.info"
@@ -38,7 +42,8 @@ load_rc_config ${name}
 : ${varnishncsa_syslog_enable:=NO}
 : ${varnishncsa_syslog_pidfile=/var/run/${name}.pid}
 : ${varnishncsa_syslog_flags="-t off -P ${varnishncsa_syslog_pidfile}\
-${varnishncsa_syslog_logformat:+ -F \"$varnishncsa_syslog_logformat\"}"}
+${varnishncsa_syslog_logformat:+ -F \"$varnishncsa_syslog_logformat\"}\
+${varnishncsa_syslog_query:+ -q \"$varnishncsa_syslog_query\"}"}
 : ${varnishncsa_syslog_loggeropts="-p local6.info"}
 
 procname="/usr/local/bin/varnishncsa"
